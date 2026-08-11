@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const pool = require('./config/db');
 const authRoutes = require('./routes/auth');
+const projectRoutes = require('./routes/projects');
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.listen(PORT, () => {
   console.log("server started on port " + PORT);
