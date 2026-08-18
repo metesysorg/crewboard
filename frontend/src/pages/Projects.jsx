@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
 
@@ -8,7 +9,6 @@ function Projects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // form ke liye states
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -16,7 +16,6 @@ function Projects() {
 
   const isAdminOrPM = user?.role === "admin" || user?.role === "pm";
 
-  // component load hote hi projects fetch karo
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -58,13 +57,11 @@ function Projects() {
         return;
       }
 
-      // form reset karo, list dobara load karo
       setName("");
       setDescription("");
       setStatus("active");
       setShowForm(false);
       fetchProjects();
-
     } catch (err) {
       setError("Something went wrong");
     }
@@ -97,11 +94,20 @@ function Projects() {
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {/* Create form - sirf admin/pm ko dikhega */}
       {showForm && isAdminOrPM && (
-        <form onSubmit={handleCreate} style={{ border: "1px solid #ddd", padding: "15px", borderRadius: "8px", marginTop: "15px", maxWidth: "400px" }}>
+        <form
+          onSubmit={handleCreate}
+          style={{
+            border: "1px solid #ddd",
+            padding: "15px",
+            borderRadius: "8px",
+            marginTop: "15px",
+            maxWidth: "400px",
+          }}
+        >
           <div style={{ marginBottom: "10px" }}>
-            <label>Name</label><br />
+            <label>Name</label>
+            <br />
             <input
               type="text"
               value={name}
@@ -110,7 +116,8 @@ function Projects() {
             />
           </div>
           <div style={{ marginBottom: "10px" }}>
-            <label>Description</label><br />
+            <label>Description</label>
+            <br />
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -118,8 +125,13 @@ function Projects() {
             />
           </div>
           <div style={{ marginBottom: "10px" }}>
-            <label>Status</label><br />
-            <select value={status} onChange={(e) => setStatus(e.target.value)} style={{ width: "100%", padding: "8px" }}>
+            <label>Status</label>
+            <br />
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              style={{ width: "100%", padding: "8px" }}
+            >
               <option value="active">Active</option>
               <option value="completed">Completed</option>
               <option value="archived">Archived</option>
@@ -129,7 +141,6 @@ function Projects() {
         </form>
       )}
 
-      {/* Projects list */}
       <div style={{ marginTop: "20px" }}>
         {loading ? (
           <p>Loading projects...</p>
@@ -147,7 +158,9 @@ function Projects() {
                   width: "250px",
                 }}
               >
-                <h3 style={{ margin: "0 0 8px 0" }}>{project.name}</h3>
+                <Link to={`/projects/${project.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                  <h3 style={{ margin: "0 0 8px 0" }}>{project.name}</h3>
+                </Link>
                 <p style={{ color: "#666", fontSize: "14px" }}>{project.description || "No description"}</p>
                 <p style={{ fontSize: "13px" }}>
                   Status: <strong>{project.status}</strong>
