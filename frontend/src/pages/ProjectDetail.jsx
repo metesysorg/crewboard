@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../context/AuthContext";
 
@@ -101,6 +101,9 @@ function ProjectDetail() {
     <Layout>
       <h2>{project?.name}</h2>
       <p>{project?.description}</p>
+      <Link to={`/projects/${id}/board`}>
+        <button style={{ marginBottom: "15px" }}>View Board</button>
+      </Link>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
