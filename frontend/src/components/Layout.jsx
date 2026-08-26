@@ -26,6 +26,7 @@ function Layout({ children }) {
           {isAdminOrPM ? (
             <>
               <Link to="/candidates" style={{ color: "white" }}>Candidates</Link>
+              <Link to="/team" style={{ color: "white" }}>Team Directory</Link>
               <Link to="/analytics" style={{ color: "white" }}>Analytics</Link>
             </>
           ) : (
