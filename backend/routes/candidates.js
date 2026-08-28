@@ -1,5 +1,6 @@
 const express = require("express");
 const pool = require("../config/db");
+const bcrypt = require("bcrypt");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -39,7 +40,7 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// UPDATE candidate status (with pipeline validation)
+// UPDATE candidate status (with pipeline validation + auto user creation)
 router.patch("/:id/status", authMiddleware, async (req, res) => {
   try {
     const { status } = req.body;
@@ -53,17 +54,38 @@ router.patch("/:id/status", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Candidate not found" });
     }
 
-    const currentIndex = PIPELINE_ORDER.indexOf(current.rows[0].status);
+    const candidate = current.rows[0];
+    const currentIndex = PIPELINE_ORDER.indexOf(candidate.status);
     const newIndex = PIPELINE_ORDER.indexOf(status);
 
     if (newIndex < currentIndex) {
-      console.log(`Warning: backward move from ${current.rows[0].status} to ${status}`);
+      console.log(`Warning: backward move from ${candidate.status} to ${status}`);
     }
 
     const updated = await pool.query(
       "UPDATE Candidates SET status = $1 WHERE id = $2 RETURNING *",
       [status, req.params.id]
     );
+
+    // Agar status "active_intern" ban gaya hai, to user banao (agar pehle se nahi hai)
+    if (status === "active_intern") {
+      const existingUser = await pool.query("SELECT * FROM Users WHERE email = $1", [candidate.email]);
+
+      if (existingUser.rows.length === 0) {
+        const tempPassword = "intern123"; // temporary default password
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+        await pool.query(
+          `INSERT INTO Users (name, email, password_hash, role)
+           VALUES ($1, $2, $3, 'intern')`,
+          [candidate.name, candidate.email, hashedPassword]
+        );
+
+        console.log(`New intern user created for ${candidate.email}`);
+      } else {
+        console.log(`User already exists for ${candidate.email}, skipping creation`);
+      }
+    }
 
     res.json(updated.rows[0]);
   } catch (err) {

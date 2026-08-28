@@ -18,4 +18,11 @@ function App() {
       <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
       <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
       <Route path="/projects/:id/board" element={<ProtectedRoute><Board /></ProtectedRoute>} />
-      <Route
+      <Route path="/candidates" element={<ProtectedRoute><Candidates /></ProtectedRoute>} />
+      <Route path="/team" element={<ProtectedRoute><TeamDirectory /></ProtectedRoute>} />
+      <Route path="/" element={<Login />} />
+    </Routes>
+  );
+}
+
+export default App;
