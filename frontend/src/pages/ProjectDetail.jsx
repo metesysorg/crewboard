@@ -97,6 +97,13 @@ function ProjectDetail() {
     return u ? u.name : "Unassigned";
   }
 
+  function isOverdue(task) {
+    if (!task.deadline || task.status === "done") return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(task.deadline) < today;
+  }
+
   return (
     <Layout>
       <h2>{project?.name}</h2>
@@ -199,19 +206,35 @@ function ProjectDetail() {
             >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <h4 style={{ margin: 0 }}>{task.title}</h4>
-                {task.priority === "high" && (
-                  <span
-                    style={{
-                      background: "red",
-                      color: "white",
-                      padding: "2px 8px",
-                      borderRadius: "4px",
-                      fontSize: "12px",
-                    }}
-                  >
-                    HIGH
-                  </span>
-                )}
+                <div>
+                  {task.priority === "high" && (
+                    <span
+                      style={{
+                        background: "red",
+                        color: "white",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                      }}
+                    >
+                      HIGH
+                    </span>
+                  )}
+                  {isOverdue(task) && (
+                    <span
+                      style={{
+                        background: "darkred",
+                        color: "white",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        marginLeft: "6px",
+                      }}
+                    >
+                      OVERDUE
+                    </span>
+                  )}
+                </div>
               </div>
               <p style={{ fontSize: "14px", color: "#666" }}>{task.description}</p>
               <p style={{ fontSize: "13px" }}>

@@ -42,6 +42,13 @@ function Board() {
     fetchTasks();
   }
 
+  function isOverdue(task) {
+    if (!task.deadline || task.status === "done") return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(task.deadline) < today;
+  }
+
   const columns = [
     { key: "todo", label: "To Do" },
     { key: "doing", label: "Doing" },
@@ -80,6 +87,21 @@ function Board() {
                   }}
                 >
                   <p style={{ fontWeight: "bold", margin: "0 0 8px 0" }}>{task.title}</p>
+                  {isOverdue(task) && (
+                    <span
+                      style={{
+                        background: "darkred",
+                        color: "white",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        fontSize: "11px",
+                        display: "inline-block",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      OVERDUE
+                    </span>
+                  )}
                   <select
                     value={task.status}
                     onChange={(e) => handleStatusChange(task.id, e.target.value)}
